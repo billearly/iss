@@ -14,31 +14,38 @@ const initializeMap = () => {
   }).setView(bounds.getCenter(), 7);
 }
 
-const initializeTileLayer = (map) => {
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+const initializeTileLayer = () => {
+  return L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     noWrap: true,
-  }).addTo(map);
+  });
 }
 
-const initializeStartPos = (map) => {
-  const bostonPos = [42.3601, -71.0589];
-  
-  L.circle(bostonPos, {
-    color: '#E8849D',
-    fillColor: '#FFA69E',
-    fillOpacity: 0.75,
-    radius: 100000
-  }).addTo(map);
-}
-
-const initializeIssIcon = (map) => {
+const initializeIssIcon = () => {
   return L.circle([0, 0], {
     color: 'green',
     fillColor: 'green',
     fillOpacity: 0.75,
     radius: 100000
-  }).addTo(map);
+  });
+}
+
+const initializeResultIcons = () => {
+  const iconList = [];
+
+  for (var i = 0; i < 5; i++) {
+    iconList.push(
+      L.circle([0, 0], {
+        color: 'yellow',
+        fillColor: 'yellow',
+        fillOpacity: 0,
+        opacity: 0,
+        radius: 100000
+      })
+    );
+  }
+
+  return iconList;
 }
 
 const trackIssPos = (issIcon) => {
@@ -52,11 +59,15 @@ const trackIssPos = (issIcon) => {
 
 export const createMap = () => {
   const map = initializeMap();
-  initializeTileLayer(map);
-  initializeStartPos(map);
+  const tileLayer = initializeTileLayer();
+  const issIcon = initializeIssIcon();
+  const resultIcons = initializeResultIcons();
 
-  const issIcon = initializeIssIcon(map);
+  tileLayer.addTo(map);
+  issIcon.addTo(map);
+  resultIcons.forEach(icon => icon.addTo(map));
+
   trackIssPos(issIcon);
 
-  return { map, issIcon };
+  return { map, issIcon, resultIcons };
 }
