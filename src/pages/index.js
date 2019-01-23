@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { createMap } from '../leaflet/setup';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
+import { debounce } from '../utility';
 import {
   GlobalStyle,
   LeafletLibs,
   MapContainer,
   Button,
-  Search
+  SearchBar
 } from '../components';
 
 const provider = new OpenStreetMapProvider();
@@ -19,13 +20,14 @@ export default class IndexPage extends Component {
       map: null,
       issIcon: null,
       resultIcons: null,
-      searchTerm: ''
+      searchTerm: '',
+      isSearching: false
     }
 
     this.handleChange = this.handleChange.bind(this);
     this.centerIssIcon = this.centerIssIcon.bind(this);
-    this.performSearch = this.performSearch.bind(this);
     this.displayResults = this.displayResults.bind(this);
+    this.performSearch = debounce(this.performSearch, 1500, true).bind(this);
   }
 
   componentDidMount() {
@@ -51,6 +53,8 @@ export default class IndexPage extends Component {
     if (this.state.searchTerm !== '') {
       provider.search({ query: this.state.searchTerm })
         .then(results => {
+          this.setState({ isSearching: false });
+
           if (results.length > 0) {
             this.displayResults(results);
           }
@@ -80,7 +84,8 @@ export default class IndexPage extends Component {
 
   handleChange(e) {
     this.setState({
-      searchTerm: e.target.value
+      searchTerm: e.target.value,
+      isSearching: e.target.value !== ''
     });
   }
 
@@ -90,11 +95,12 @@ export default class IndexPage extends Component {
         <GlobalStyle />
         <LeafletLibs />
 
-        <Search 
+        <SearchBar
           placeholder='Search location'
           onChange={this.handleChange}
-          onBlur={this.performSearch}
+          onKeyUp={this.performSearch}
           value={this.state.searchTerm}
+          isSearching={this.state.isSearching}
         />
 
         <MapContainer id="map"></MapContainer>

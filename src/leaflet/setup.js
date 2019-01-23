@@ -9,9 +9,10 @@ const initializeMap = () => {
   return L.map('map', {
     zoomSnap: 0.25,
     minZoom: 3,
+    maxZoom: 4.25,
     maxBounds: bounds,
     maxBoundsViscosity: 0.75
-  }).setView(bounds.getCenter(), 7);
+  }).setView(bounds.getCenter(), 3);
 }
 
 const initializeTileLayer = () => {
@@ -25,10 +26,15 @@ const initializeIssIcon = () => {
   return L.circle([0, 0], {
     color: 'green',
     fillColor: 'green',
-    fillOpacity: 0.75,
+    fillOpacity: 0,
+    opacity: 0,
     radius: 100000
   });
 }
+
+const showIssIcon = (issIcon) => {
+  issIcon.setStyle({ opacity: 0.75, fillOpacity: 0.75 });
+};
 
 const initializeResultIcons = () => {
   const iconList = [];
@@ -49,12 +55,10 @@ const initializeResultIcons = () => {
 }
 
 const trackIssPos = (issIcon) => {
-  setInterval(() => {
-    getPosition()
-      .then((pos) => {
-        issIcon.setLatLng([pos.latitude, pos.longitude]);
-      });
-  }, 5000);
+  getPosition()
+    .then((pos) => {
+      issIcon.setLatLng([pos.latitude, pos.longitude]);
+    });
 }
 
 export const createMap = () => {
@@ -68,6 +72,13 @@ export const createMap = () => {
   resultIcons.forEach(icon => icon.addTo(map));
 
   trackIssPos(issIcon);
+  setInterval(() => {
+    trackIssPos(issIcon)
+  }, 5000);
+
+  setTimeout(() => {
+    showIssIcon(issIcon);
+  }, 5000);
 
   return { map, issIcon, resultIcons };
 }
