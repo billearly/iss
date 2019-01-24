@@ -14,8 +14,7 @@ const rotate = keyframes`
 const SpinnerContainer = styled.div`
   position: absolute;
   right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0.5rem;
   z-index: 5000;
 `;
 

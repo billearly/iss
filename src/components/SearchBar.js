@@ -1,29 +1,29 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Spinner } from './';
+import {
+  Spinner,
+  SearchResults
+} from './';
 
 const SearchBarContainer = styled.div`
   left: 50%;
   position: fixed;
   top: 0.75rem;
   transform: translateX(-50%);
+  width: 30rem;
   z-index: 5000;
+
+  @media screen and (max-width: 35rem) {
+    width: calc(100% - 1.5rem);
+  }
 `;
 
 const SearchInput = styled.input`
   border: none;
   border-radius: 0.25rem;
   box-shadow: 0 0.15em 1.5em #00000036;
-  min-width: 30rem;
   padding: 0.75rem;
-
-  @media screen and (max-width: 35rem) {
-    left: unset;
-    margin: 0 0.75rem;
-    min-width: unset;
-    transform: unset;
-    width: calc(100% - 1.5rem);
-  }
+  width: 100%;
 `;
 
 export const SearchBar = ({
@@ -31,7 +31,8 @@ export const SearchBar = ({
   onChange,
   onKeyUp,
   value,
-  isSearching
+  isSearching,
+  searchResults
 }) => {
   return (
     <SearchBarContainer>
@@ -44,6 +45,12 @@ export const SearchBar = ({
 
       {isSearching &&
         <Spinner />
+      }
+
+      {searchResults &&
+        <SearchResults
+          results={searchResults}
+        />
       }
     </SearchBarContainer>
   );

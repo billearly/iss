@@ -21,7 +21,8 @@ export default class IndexPage extends Component {
       issIcon: null,
       resultIcons: null,
       searchTerm: '',
-      isSearching: false
+      isSearching: false,
+      searchResults: []
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -53,7 +54,10 @@ export default class IndexPage extends Component {
     if (this.state.searchTerm !== '') {
       provider.search({ query: this.state.searchTerm })
         .then(results => {
-          this.setState({ isSearching: false });
+          this.setState({
+            isSearching: false,
+            searchResults: results
+          });
 
           if (results.length > 0) {
             this.displayResults(results);
@@ -101,6 +105,7 @@ export default class IndexPage extends Component {
           onKeyUp={this.performSearch}
           value={this.state.searchTerm}
           isSearching={this.state.isSearching}
+          searchResults={this.state.searchResults}
         />
 
         <MapContainer id="map"></MapContainer>
