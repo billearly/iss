@@ -2,7 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import {
   Spinner,
-  SearchResults
+  SearchResults,
+  ClearButton
 } from './';
 
 const SearchBarContainer = styled.div`
@@ -47,11 +48,17 @@ export const SearchBar = ({
         <Spinner />
       }
 
+      {!isSearching && value &&
+        <ClearButton />
+      }
+
       {searchResults &&
         <SearchResults
           results={searchResults}
         />
       }
+
+      {/*{!isSearching && value && !searchResults} --- This is the way to show a 'no results' message*/}
     </SearchBarContainer>
   );
 }
