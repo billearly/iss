@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { Component } from 'react';
 import styled from 'styled-components';
 import {
   Spinner,
   SearchResults,
+  SearchMessage,
   ClearButton
 } from './';
 
@@ -27,41 +28,61 @@ const SearchInput = styled.input`
   width: 100%;
 `;
 
-export const SearchBar = ({
-  placeholder,
-  onChange,
-  onKeyUp,
-  resetSearch,
-  value,
-  isSearching,
-  searchResults
-}) => {
-  return (
-    <SearchBarContainer>
-      <SearchInput
-        placeholder={placeholder}
-        onChange={onChange}
-        onKeyUp={onKeyUp}
-        value={value}
-      />
+export class SearchBar extends Component {
+  constructor(props) {
+    super(props);
+    
+    this.input = React.createRef();
+    this.handleClear = this.handleClear.bind(this);
+  }
 
-      {isSearching &&
-        <Spinner />
-      }
+  handleClear() {
+    this.props.resetSearch();
+    this.input.current.focus();
+  }
 
-      {!isSearching && value &&
-        <ClearButton
-          onClick={resetSearch}
+  render() {
+    const {
+      placeholder,
+      onChange,
+      onKeyUp,
+      value,
+      isSearching,
+      searchResults
+    } = this.props;
+
+    return (
+      <SearchBarContainer>
+        <SearchInput
+          placeholder={placeholder}
+          onChange={onChange}
+          onKeyUp={onKeyUp}
+          value={value}
+          ref={this.input}
         />
-      }
-
-      {searchResults &&
-        <SearchResults
-          results={searchResults}
-        />
-      }
-
-      {/*{!isSearching && value && !searchResults} --- This is the way to show a 'no results' message*/}
-    </SearchBarContainer>
-  );
+  
+        {isSearching &&
+          <Spinner />
+        }
+  
+        {!isSearching && value &&
+          <ClearButton
+            onClick={this.handleClear}
+          />
+        }
+  
+        {searchResults.length !== 0 &&
+          <SearchResults
+            results={searchResults}
+          />
+        }
+  
+        {!isSearching && value && searchResults.length === 0 &&
+          <SearchMessage
+            message={`No results for '${value}'`}
+          />
+        }
+      </SearchBarContainer>
+    );
+  }
 }
