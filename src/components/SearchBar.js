@@ -31,6 +31,7 @@ export const SearchBar = ({
   placeholder,
   onChange,
   onKeyUp,
+  resetSearch,
   value,
   isSearching,
   searchResults
@@ -49,7 +50,9 @@ export const SearchBar = ({
       }
 
       {!isSearching && value &&
-        <ClearButton />
+        <ClearButton
+          onClick={resetSearch}
+        />
       }
 
       {searchResults &&

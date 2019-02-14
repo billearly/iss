@@ -29,6 +29,8 @@ export default class IndexPage extends Component {
     this.centerIssIcon = this.centerIssIcon.bind(this);
     this.displayResults = this.displayResults.bind(this);
     this.performSearch = debounce(this.performSearch, 1500, true).bind(this);
+    this.clearPreviousResultIcons = this.clearPreviousResultIcons.bind(this);
+    this.resetSearch = this.resetSearch.bind(this);
   }
 
   componentDidMount() {
@@ -66,11 +68,17 @@ export default class IndexPage extends Component {
     }
   }
 
+  resetSearch() {
+    this.clearPreviousResultIcons();
+
+    this.setState({
+      searchTerm: '',
+      searchResults: []
+    });
+  }
+
   displayResults(resultList) {
-    // Clear previous results
-    this.state.resultIcons.forEach(icon => 
-      icon.setStyle({ opacity: 0, fillOpacity: 0 })
-    );
+    this.clearPreviousResultIcons();
 
     // Show top 5 results
     const limit = resultList.length < 5
@@ -84,6 +92,12 @@ export default class IndexPage extends Component {
 
     // Pan to the top result
     this.state.map.panTo([resultList[0].y, resultList[0].x]);
+  }
+
+  clearPreviousResultIcons() {
+    this.state.resultIcons.forEach(icon => 
+      icon.setStyle({ opacity: 0, fillOpacity: 0 })
+    );
   }
 
   handleChange(e) {
@@ -103,6 +117,7 @@ export default class IndexPage extends Component {
           placeholder='Search location'
           onChange={this.handleChange}
           onKeyUp={this.performSearch}
+          resetSearch={this.resetSearch}
           value={this.state.searchTerm}
           isSearching={this.state.isSearching}
           searchResults={this.state.searchResults}
