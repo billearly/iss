@@ -14,7 +14,7 @@ const ButtonContainer = styled.button`
 
 export const ClearButton = ({ onClick }) => {
   return (
-    <ButtonContainer onClick={onClick}>
+    <ButtonContainer type='button' onClick={onClick}>
       <XCircle color='#00000065'/>
     </ButtonContainer>
   );

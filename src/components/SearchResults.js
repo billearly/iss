@@ -31,14 +31,26 @@ const StyledLabel = styled.label`
   cursor: pointer;
   display: block;
   padding: 0.5rem;
+
+  &:hover {
+    background-color: #ffd3d3;
+  }
 `;
 
 export const SearchResults = ({ results }) => {
   const mapResults = () => {
     return results.map((result, i) =>
-      <StyledResult>
-        <StyledInput type="radio" name="result" id={`result-${i}`} value={result.label} />
-        <StyledLabel for={`result-${i}`}>{result.label}</StyledLabel>
+      <StyledResult key={i}>
+        <StyledInput
+          type="radio"
+          name="result"
+          id={`result-${i}`}
+          value={result.label}
+        />
+        
+        <StyledLabel htmlFor={`result-${i}`}>
+          {result.label}
+        </StyledLabel>
       </StyledResult>
     );
   };

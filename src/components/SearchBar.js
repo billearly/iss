@@ -7,7 +7,7 @@ import {
   ClearButton
 } from './';
 
-const SearchBarContainer = styled.div`
+const SearchBarContainer = styled.form`
   left: 50%;
   position: fixed;
   top: 0.75rem;
@@ -34,11 +34,18 @@ export class SearchBar extends Component {
     
     this.input = React.createRef();
     this.handleClear = this.handleClear.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   handleClear() {
     this.props.resetSearch();
     this.input.current.focus();
+  }
+
+  handleSubmit(e) {
+    e.preventDefault();
+
+    // This is where I want to do the leaflet display, so I need to be passed a function
   }
 
   render() {
@@ -52,7 +59,7 @@ export class SearchBar extends Component {
     } = this.props;
 
     return (
-      <SearchBarContainer>
+      <SearchBarContainer onSubmit={this.handleSubmit}>
         <SearchInput
           placeholder={placeholder}
           onChange={onChange}
