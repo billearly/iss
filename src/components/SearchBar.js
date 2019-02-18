@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import { debounce } from '../utility';
+import { OpenStreetMapProvider } from 'leaflet-geosearch';
 import {
   Spinner,
   SearchResults,
   SearchMessage,
   ClearButton
 } from './';
+
+const provider = new OpenStreetMapProvider();
 
 const SearchBarContainer = styled.form`
   left: 50%;
@@ -31,14 +35,34 @@ const SearchInput = styled.input`
 export class SearchBar extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      searchTerm: '',
+      isSearching: false,
+      searchResults: []
+    }
     
     this.input = React.createRef();
+
+    this.performSearch = debounce(this.performSearch, 1500, true).bind(this);
+    this.resetSearch = this.resetSearch.bind(this);
+    this.clearPreviousResultIcons = this.clearPreviousResultIcons.bind(this);
+    this.displayResults = this.displayResults.bind(this);
+
+    this.handleChange = this.handleChange.bind(this);
     this.handleClear = this.handleClear.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  handleChange(e) {
+    this.setState({
+      searchTerm: e.target.value,
+      isSearching: e.target.value !== ''
+    });
+  }
+
   handleClear() {
-    this.props.resetSearch();
+    this.resetSearch();
     this.input.current.focus();
   }
 
@@ -48,45 +72,84 @@ export class SearchBar extends Component {
     // This is where I want to do the leaflet display, so I need to be passed a function
   }
 
-  render() {
-    const {
-      placeholder,
-      onChange,
-      onKeyUp,
-      value,
-      isSearching,
-      searchResults
-    } = this.props;
+  performSearch() {
+    if (this.state.searchTerm !== '') {
+      provider.search({ query: this.state.searchTerm })
+        .then(results => {
+          this.setState({
+            isSearching: false,
+            searchResults: results
+          });
 
+          if (results.length > 0) {
+            this.displayResults(results);
+          }
+        });
+    }
+  }
+
+  displayResults(resultList) {
+    this.clearPreviousResultIcons();
+
+    // Show top 5 results
+    const limit = resultList.length < 5
+      ? resultList.length
+      : 5;
+
+    for (var i = 0; i < limit; i++) {
+      this.props.resultIcons[i].setLatLng([resultList[i].y, resultList[i].x]);
+      this.props.resultIcons[i].setStyle({ opacity: 1, fillOpacity: 1 });
+    }
+
+    // Pan to the top result
+    this.props.map.panTo([resultList[0].y, resultList[0].x]);
+  }
+
+  clearPreviousResultIcons() {
+    this.props.resultIcons.forEach(icon => 
+      icon.setStyle({ opacity: 0, fillOpacity: 0 })
+    );
+  }
+
+  resetSearch() {
+    this.clearPreviousResultIcons();
+
+    this.setState({
+      searchTerm: '',
+      searchResults: []
+    });
+  }
+
+  render() {
     return (
       <SearchBarContainer onSubmit={this.handleSubmit}>
         <SearchInput
-          placeholder={placeholder}
-          onChange={onChange}
-          onKeyUp={onKeyUp}
-          value={value}
+          placeholder={this.props.placeholder}
+          onChange={this.handleChange}
+          onKeyUp={this.performSearch}
+          value={this.state.searchTerm}
           ref={this.input}
         />
   
-        {isSearching &&
+        {this.state.isSearching &&
           <Spinner />
         }
   
-        {!isSearching && value &&
+        {!this.state.isSearching && this.state.searchTerm &&
           <ClearButton
             onClick={this.handleClear}
           />
         }
   
-        {searchResults.length !== 0 &&
+        {this.state.searchResults.length !== 0 &&
           <SearchResults
-            results={searchResults}
+            results={this.state.searchResults}
           />
         }
   
-        {!isSearching && value && searchResults.length === 0 &&
+        {!this.state.isSearching && this.state.searchTerm && this.state.searchResults.length === 0 &&
           <SearchMessage
-            message={`No results for '${value}'`}
+            message={`No results for '${this.state.searchTerm}'`}
           />
         }
       </SearchBarContainer>
