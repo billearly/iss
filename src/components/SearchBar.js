@@ -6,6 +6,7 @@ import {
   Spinner,
   SearchResults,
   SearchMessage,
+  SearchSubmit,
   ClearButton
 } from './';
 
@@ -39,18 +40,20 @@ export class SearchBar extends Component {
     this.state = {
       searchTerm: '',
       isSearching: false,
-      searchResults: []
+      searchResults: [],
+      selectedResult: null
     }
     
     this.input = React.createRef();
 
     this.performSearch = debounce(this.performSearch, 1500, true).bind(this);
     this.resetSearch = this.resetSearch.bind(this);
-    this.clearPreviousResultIcons = this.clearPreviousResultIcons.bind(this);
-    this.displayResults = this.displayResults.bind(this);
+    this.clearPreviousResultIcon = this.clearPreviousResultIcon.bind(this);
+    this.displaySelectedResult = this.displaySelectedResult.bind(this);
 
     this.handleChange = this.handleChange.bind(this);
     this.handleClear = this.handleClear.bind(this);
+    this.handleSelect = this.handleSelect.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -66,10 +69,17 @@ export class SearchBar extends Component {
     this.input.current.focus();
   }
 
+  handleSelect(e) {
+    this.setState({
+      selectedResult: JSON.parse(e.target.value)
+    });
+
+    // when the results first appear I need the first one to be 'selected'
+  }
+
   handleSubmit(e) {
     e.preventDefault();
-
-    // This is where I want to do the leaflet display, so I need to be passed a function
+    this.displaySelectedResult();
   }
 
   performSearch() {
@@ -80,39 +90,31 @@ export class SearchBar extends Component {
             isSearching: false,
             searchResults: results
           });
-
-          if (results.length > 0) {
-            this.displayResults(results);
-          }
         });
     }
   }
 
-  displayResults(resultList) {
-    this.clearPreviousResultIcons();
+  displaySelectedResult() {
+    this.clearPreviousResultIcon();
 
-    // Show top 5 results
-    const limit = resultList.length < 5
-      ? resultList.length
-      : 5;
+    const location = [this.state.selectedResult.y, this.state.selectedResult.x];
 
-    for (var i = 0; i < limit; i++) {
-      this.props.resultIcons[i].setLatLng([resultList[i].y, resultList[i].x]);
-      this.props.resultIcons[i].setStyle({ opacity: 1, fillOpacity: 1 });
-    }
+    this.props.searchResultIcon.setLatLng(location);
+    this.props.searchResultIcon.setStyle({ opacity: 1, fillOpacity: 1});
+    this.props.map.panTo(location);
 
-    // Pan to the top result
-    this.props.map.panTo([resultList[0].y, resultList[0].x]);
+    this.setState({
+      searchTerm: '',
+      searchResults: []
+    });
   }
 
-  clearPreviousResultIcons() {
-    this.props.resultIcons.forEach(icon => 
-      icon.setStyle({ opacity: 0, fillOpacity: 0 })
-    );
+  clearPreviousResultIcon() {
+    this.props.searchResultIcon.setStyle({ opacity: 0, fillOpacity: 0 })
   }
 
   resetSearch() {
-    this.clearPreviousResultIcons();
+    this.clearPreviousResultIcon();
 
     this.setState({
       searchTerm: '',
@@ -130,7 +132,7 @@ export class SearchBar extends Component {
           value={this.state.searchTerm}
           ref={this.input}
         />
-  
+
         {this.state.isSearching &&
           <Spinner />
         }
@@ -140,10 +142,11 @@ export class SearchBar extends Component {
             onClick={this.handleClear}
           />
         }
-  
+
         {this.state.searchResults.length !== 0 &&
           <SearchResults
             results={this.state.searchResults}
+            handleSelect={this.handleSelect}
           />
         }
   
@@ -152,6 +155,10 @@ export class SearchBar extends Component {
             message={`No results for '${this.state.searchTerm}'`}
           />
         }
+
+        <SearchSubmit
+          type='submit'
+        />
       </SearchBarContainer>
     );
   }

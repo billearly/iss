@@ -37,7 +37,10 @@ const StyledLabel = styled.label`
   }
 `;
 
-export const SearchResults = ({ results }) => {
+export const SearchResults = ({
+  results,
+  handleSelect
+}) => {
   const mapResults = () => {
     return results.map((result, i) =>
       <StyledResult key={i}>
@@ -45,9 +48,10 @@ export const SearchResults = ({ results }) => {
           type="radio"
           name="result"
           id={`result-${i}`}
-          value={result.label}
+          value={JSON.stringify(result)}
+          onChange={handleSelect}
         />
-        
+
         <StyledLabel htmlFor={`result-${i}`}>
           {result.label}
         </StyledLabel>

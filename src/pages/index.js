@@ -15,19 +15,19 @@ export default class IndexPage extends Component {
     this.state = {
       map: null,
       issIcon: null,
-      resultIcons: null
+      searchResultIcon: null
     }
 
     this.centerIssIcon = this.centerIssIcon.bind(this);
   }
 
   componentDidMount() {
-    const { map, issIcon, resultIcons } = createMap();
+    const { map, issIcon, searchResultIcon } = createMap();
 
     this.setState({
       map,
       issIcon,
-      resultIcons
+      searchResultIcon
     });
   };
 
@@ -50,7 +50,7 @@ export default class IndexPage extends Component {
         <SearchBar
           placeholder='Search location'
           map={this.state.map}
-          resultIcons={this.state.resultIcons}
+          searchResultIcon={this.state.searchResultIcon}
         />
 
         <MapContainer id="map"></MapContainer>

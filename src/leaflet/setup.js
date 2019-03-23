@@ -36,22 +36,14 @@ const showIssIcon = (issIcon) => {
   issIcon.setStyle({ opacity: 0.75, fillOpacity: 0.75 });
 };
 
-const initializeResultIcons = () => {
-  const iconList = [];
-
-  for (var i = 0; i < 5; i++) {
-    iconList.push(
-      L.circle([0, 0], {
-        color: 'yellow',
-        fillColor: 'yellow',
-        fillOpacity: 0,
-        opacity: 0,
-        radius: 100000
-      })
-    );
-  }
-
-  return iconList;
+const initializeSearchResultIcon = () => {
+  return L.circle([0, 0], {
+    color: 'yellow',
+    fillColor: 'yellow',
+    fillOpacity: 0,
+    opacity: 0,
+    radius: 100000
+  });
 }
 
 const trackIssPos = (issIcon) => {
@@ -65,11 +57,11 @@ export const createMap = () => {
   const map = initializeMap();
   const tileLayer = initializeTileLayer();
   const issIcon = initializeIssIcon();
-  const resultIcons = initializeResultIcons();
+  const searchResultIcon = initializeSearchResultIcon();
 
   tileLayer.addTo(map);
   issIcon.addTo(map);
-  resultIcons.forEach(icon => icon.addTo(map));
+  searchResultIcon.addTo(map);
 
   trackIssPos(issIcon);
   setInterval(() => {
@@ -80,5 +72,5 @@ export const createMap = () => {
     showIssIcon(issIcon);
   }, 5000);
 
-  return { map, issIcon, resultIcons };
+  return { map, issIcon, searchResultIcon };
 }
