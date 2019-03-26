@@ -88,7 +88,8 @@ export class SearchBar extends Component {
         .then(results => {
           this.setState({
             isSearching: false,
-            searchResults: results
+            searchResults: results,
+            selectedResult: results[0]
           });
         });
     }
@@ -143,10 +144,11 @@ export class SearchBar extends Component {
           />
         }
 
-        {this.state.searchResults.length !== 0 &&
+        {!this.state.isSearching && this.state.searchResults.length !== 0 &&
           <SearchResults
             results={this.state.searchResults}
             handleSelect={this.handleSelect}
+            handleClick={this.displaySelectedResult}
           />
         }
   

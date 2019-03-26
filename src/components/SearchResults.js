@@ -39,7 +39,8 @@ const StyledLabel = styled.label`
 
 export const SearchResults = ({
   results,
-  handleSelect
+  handleSelect,
+  handleClick
 }) => {
   const mapResults = () => {
     return results.map((result, i) =>
@@ -50,6 +51,7 @@ export const SearchResults = ({
           id={`result-${i}`}
           value={JSON.stringify(result)}
           onChange={handleSelect}
+          onClick={handleClick}
         />
 
         <StyledLabel htmlFor={`result-${i}`}>
