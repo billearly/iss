@@ -24,8 +24,8 @@ const initializeTileLayer = () => {
 
 const initializeIssIcon = () => {
   return L.circle([0, 0], {
-    color: 'green',
-    fillColor: 'green',
+    color: '#2c2c2ce0',
+    fillColor: '#2c2c2ce0',
     fillOpacity: 0,
     opacity: 0,
     radius: 100000
@@ -38,8 +38,8 @@ const showIssIcon = (issIcon) => {
 
 const initializeSearchResultIcon = () => {
   return L.circle([0, 0], {
-    color: 'yellow',
-    fillColor: 'yellow',
+    color: '#133b65e0',
+    fillColor: '#133b65e0',
     fillOpacity: 0,
     opacity: 0,
     radius: 100000
